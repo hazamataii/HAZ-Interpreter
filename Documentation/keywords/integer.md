@@ -1,0 +1,5 @@
+# integer
+
+`integer`|`int`
+
+The 
