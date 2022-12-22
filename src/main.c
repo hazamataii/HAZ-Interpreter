@@ -1,156 +1,111 @@
-#include "types.h"
-#include <stdio.h>
-
 #ifdef _WIN32
+/*If building for windows*/
+/*Allow for utf-16 entry point*/
 #ifndef UNICODE
 #define UNICODE
-#endif 
-#include <windows.h>
+#endif
+/*Small windows api*/
+#include <stdio.h>
+#include "headers/win.h"
+#include <shellapi.h>
+INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, INT nCmdShow) {
+
 #include <stdlib.h>
-i32 WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, u16* lpCmdLine, i32 nCmdShow) {
-u16** argc = (void*)0;
-i32 arcv = 0;
+/*Convert utf-16 to utf-8*/
+LPWSTR* argc = (void*)0;
+int arcv = 0;
+/*Get Arguments*/
 argc = CommandLineToArgvW(GetCommandLineW(), &arcv);
 if(argc == (void*)0) {
     return -1;
 }
-i8** argv = (void*)0;
-argv = (i8**)calloc(arcv, sizeof(i8*));
+char** argv = (void*)0;
+argv = (char**)calloc(arcv, sizeof(char*));
 if(argv == (void*)0) {
     return -1;
 }
-i32 argConvIndex = 0;
+int argConvIndex = 0;
 while(argConvIndex < arcv) {
-i32 tmp = WideCharToMultiByte(CP_UTF8, 0, argc[argConvIndex], -1, (void*)0, 0, 0, 0);
-argv[argConvIndex] = (i8*)calloc(tmp, sizeof(i8));
+/*Get UTF-8 length*/
+int tmp = WideCharToMultiByte(CP_UTF8, 0, argc[argConvIndex], -1, (void*)0, 0, 0, 0);
+argv[argConvIndex] = (char*)calloc(tmp, sizeof(char));
 if(argv[argConvIndex] == (void*)0) {
     return -1;
 }
+/*Get UTF-8 char array*/
 WideCharToMultiByte(CP_UTF8, 0,argc[argConvIndex], -1, argv[argConvIndex], tmp, 0, 0);
 ++argConvIndex;
 
 }
-i32 i = 0;
-/*while(i < arcv) {
-    printf("%i\n", i);
-    free(argc[i]);
-    ++i;
-}
-free(argc);*/
+
+/*Set Work Directory to executable*/
+char* TmpWorkFilePath = (char*)calloc(strlen(argv[0]), sizeof(char));
+memcpy(TmpWorkFilePath, argv[0], (strlen(argv[0])-19));
+//printf("%s\n", TmpWorkFilePath);
+
+SetCurrentDirectoryA(TmpWorkFilePath);
+free(TmpWorkFilePath);
+
 #else 
-i32 main(i32 arcv, i8** argv) {
+/*Linux entry point*/
+int main(int arcv, char** argv){
 #endif
-u8 RunFlags = 0;
-printf("T\n");
-i32 srcI = 0, ARGSi = 0, playI = 0, outI = 0, argI = 0;
-i16 TMP = 0;
-while(argI < arcv){
-TMP = *((i16*)argv[argI]);
-if(argv[argI][0] == 45){
-switch(TMP) {
-    case 0x642D:{
-    }
-    case 0x442D:{
-        if((RunFlags &(1 << 0)) == 0b00000000) {
-        /*printf("DEBUG MODE ACTIVE\n");*/
-        RunFlags += 0b00000001;
-        }
-        break;
-    }
-    case 0x632D:{
-    }
-    case 0x432D:{
-        if((RunFlags &(1 << 1)) < 0b00000010){
-       /* printf("COMPILE MODE ACTIVE\n");*/
-        RunFlags |= 0b00000010;
-        }
-        break;
-    }
-    case 0x2D2D:{
-        u32 OTMP = *((u32*)&argv[argI][2]);
-        if(OTMP = 0x73677261) {
-            ARGSi = argI + 1;
-            argI = arcv;
-        }
-        break;
-    }
-    case 0x6F2D:{
-    }
-    case 0x4F2D:{
-        outI = argI + 1;
-        break;
-    }
-    case 0x732D:{
-    }
-    case 0x532D:{
-        srcI = argI + 1;
-        break;
-    }
-    default:{
-/*        printf("THE ARGUMENT \"%ls\" IS INVALID\n", argv[argI]);*/
-        break;
-    }
-}} else {
-    playI = argI;
-}
-++argI;
-}
+#include "headers/flags.h"
+char Flags = 0;
+register unsigned long long int i = 2;
+char* playableFile = argv[1];
 
-#ifdef _WIN32
-#include "win/win.h"
-printf("HERE\n");
-if((RunFlags & (1 << 1)) >= 0b00000010){
-if((RunFlags & (1 << 0)) == 0b00000000){
-CompileNormal(srcI, outI, argv);
-} else {
-CompileDebug(srcI, outI, argv);
-}
-} else {
-if((RunFlags & (1 << 0)) == 0b00000000){
-RunNormal(playI, ARGSi, argv, arcv);
-} else {
-RunDebug(playI, ARGSi, argv, arcv);
-}
-}
-#else
-#include "linux/linux.h"
-printf("HERE\n");
-if((RunFlags & (1 << 1)) >= 0b00000010){
-if((RunFlags & (1 << 0)) == 0b00000000){
-CompileNormal(srcI, outI, argv);
-} else {
-CompileDebug(srcI, outI, argv);
-}
-} else {
-if((RunFlags & (1 << 0)) == 0b00000000){
-RunNormal(playI, ARGSi, argv, arcv);
-} else {
-RunDebug(playI, ARGSi, argv, arcv);
-}
-}
-#endif
-
-
-
-
-
-
-
-
-
-
-
-#ifdef _WIN32
-i = 0;
+/*Check Arguments*/
 while(i < arcv) {
-    free(argv[i]);
+    printf("%s\n", argv[i]);
+    if(argv[i][0] == '-') {
+        switch(argv[i][1]) {
+            case 'C':
+            case 'c':{
+                printf("COMPILE MODE ACTIVE\n");
+                Flags += COMPILEMODE;
+                break;
+            }
+            case 'D':
+            case 'd':{
+                printf("DEBUG MODE ACTIVE\n");
+                Flags += DEBUGMODE;
+                break;
+            }
+            default:{
+                printf("INVALID ARGUMENT: \"%s\"\n", argv[i]);
+                break;
+            }
+        }
+    }
     ++i;
 }
 
-free(argv);
+if(Flags & COMPILEMODE) {
+    /*Compile Mode*/
+    if(Flags & DEBUGMODE) {
+        /*Debug Mode*/
+    } else {
+        /*No Debug Mode*/
+        #include "headers/compile/compile.h"
+        compile(&playableFile);
+    }
+} else {
+    /*Run Mode*/
+    if(Flags & DEBUGMODE) {
+        /*Debug Mode*/
+    } else {
+        /*No Debug Mode*/
+        #include <string.h>
+        if(playableFile[strlen(playableFile)-1] == 'l') {
+            #include "headers/run/run.h"
+            run(&playableFile);
+        } else if(playableFile[strlen(playableFile)-1] == 'b') {
+            #include "headers/run/bytecode/runByte.h"
+            runByte(&playableFile);
+        }
+    }
+}
+
 return 0;
 }
-#else 
-return 0;
-}
-#endif
