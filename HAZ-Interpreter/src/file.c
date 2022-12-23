@@ -1,3 +1,7 @@
+#ifndef _WIN32
+#define _FILE_OFFSET_BITS 64
+#endif
+
 #include "headers/file/file.h"
 
 #include <stdio.h>
@@ -8,7 +12,7 @@ int fileRead(char const* __restrict__ filePath, char** __restrict__ dest, int co
     #ifdef _WIN32
     if((file = fopen64(filePath, "r")) == (void*)0) {
     #else
-    if((file = fopen(filePath, "r")) == (void*)0) {
+    if((file = fopen64(filePath, "r")) == (void*)0) {
     #endif
         /*Failed to open the file*/
         return -1;
@@ -17,7 +21,7 @@ int fileRead(char const* __restrict__ filePath, char** __restrict__ dest, int co
     #ifdef _WIN32
     if(_fseeki64(file, 0L, SEEK_END) != 0) {
     #else
-    if(fseeko(file, 0L, SEEK_END) != 0) {
+    if(fseeko64(file, 0L, SEEK_END) != 0) {
     #endif
         /*Failed to get to the end of the file*/
         fclose(file);
@@ -27,7 +31,7 @@ int fileRead(char const* __restrict__ filePath, char** __restrict__ dest, int co
     #ifdef _WIN32
     register unsigned long long int const size = _ftelli64(file);
     #else
-    register unsigned long long int const size = ftello(file);
+    register unsigned long long int const size = ftello64(file);
     #endif
     /*Check if size is 0*/
     if(size == 0) {
@@ -39,7 +43,7 @@ int fileRead(char const* __restrict__ filePath, char** __restrict__ dest, int co
     #ifdef _WIN32
     if(_fseeki64(file, 0L, SEEK_SET) != 0) {
     #else
-    if(fseeko(file, 0L, SEEK_SET) != 0) {
+    if(fseeko64(file, 0L, SEEK_SET) != 0) {
     #endif
         /*Failed to get back to the start of file*/
         fclose(file);
@@ -73,7 +77,7 @@ int fileWrite(char const* __restrict__ filePath, char const* __restrict__ conten
     #ifdef _WIN32
     if((file = fopen64(filePath, "w")) == (void*)0) {
     #else
-    if((file = fopen(filePath, "w")) == (void*)0) {
+    if((file = fopen64(filePath, "w")) == (void*)0) {
     #endif
         /*Failed to open file*/
         return -1;

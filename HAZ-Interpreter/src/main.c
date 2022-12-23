@@ -9,7 +9,6 @@
 #include "headers/win.h"
 #include <shellapi.h>
 INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, INT nCmdShow) {
-
 #include <stdlib.h>
 /*Convert utf-16 to utf-8*/
 LPWSTR* argc = (void*)0;
@@ -39,10 +38,16 @@ WideCharToMultiByte(CP_UTF8, 0,argc[argConvIndex], -1, argv[argConvIndex], tmp, 
 }
 
 /*Set Work Directory to executable*/
-char* TmpWorkFilePath = (char*)calloc(strlen(argv[0]), sizeof(char));
-memcpy(TmpWorkFilePath, argv[0], (strlen(argv[0])-19));
-//printf("%s\n", TmpWorkFilePath);
-
+char* TmpWorkFilePath = (char*)calloc(strlen(argv[0]), sizeof(TmpWorkFilePath[0]));
+unsigned int tmpWorkFilePathPtr = strlen(argv[0]);
+memcpy(TmpWorkFilePath, argv[0], strlen(argv[0]));
+while(TmpWorkFilePath[tmpWorkFilePathPtr] != '\\' && TmpWorkFilePath[tmpWorkFilePathPtr] != '/' && tmpWorkFilePathPtr != 0) {
+--tmpWorkFilePathPtr;
+}
+if(tmpWorkFilePathPtr != 0){
+++tmpWorkFilePathPtr;
+}
+TmpWorkFilePath[tmpWorkFilePathPtr] = 0;
 SetCurrentDirectoryA(TmpWorkFilePath);
 free(TmpWorkFilePath);
 
@@ -82,6 +87,18 @@ while(i < arcv) {
     ++i;
 }
 
+char* playableFileDir = (char*)calloc(strlen(playableFile), sizeof(playableFileDir[0]));
+unsigned int playableFileDirPtr = strlen(playableFile);
+memcpy(playableFileDir, playableFile, strlen(playableFile));
+while(playableFileDir[playableFileDirPtr] != '\\' && playableFileDir[playableFileDirPtr] != '/' && playableFileDirPtr != 0x0) {
+--playableFileDirPtr;
+}
+if(playableFileDirPtr != 0){
+++playableFileDirPtr;
+}
+playableFileDir[playableFileDirPtr] = 0;
+printf("%s\n", playableFileDir);
+
 if(Flags & COMPILEMODE) {
     /*Compile Mode*/
     if(Flags & DEBUGMODE) {
@@ -102,7 +119,7 @@ if(Flags & COMPILEMODE) {
         #include <string.h>
         if(playableFile[strlen(playableFile)-1] == 'l') {
             #include "headers/run/run.h"
-            run(&playableFile);
+            run(&playableFile, playableFileDir);
         } else if(playableFile[strlen(playableFile)-1] == 'b') {
             #include "headers/run/bytecode/runByte.h"
             runByte(&playableFile);

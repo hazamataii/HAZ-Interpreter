@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-void run(char** playableFile) {
+void run(char** playableFile, const char* __restrict__ fileLocation) {
 
     /*Get Hsh values for keywords*/
     /*hashSetStringNoTable("int");
@@ -17,6 +17,7 @@ void run(char** playableFile) {
     hashSetStringNoTable("playFile");
     hashSetStringNoTable("getInput");
     hashSetStringNoTable("if");*/
+
     /*File Pointers*/
     unsigned int maxFiles = 10;
     unsigned int curFile = 0;
@@ -50,6 +51,7 @@ void run(char** playableFile) {
     }
     /*Make sure file ends with a newline to avoid crashing*/
     fileStorage[0][strlen(fileStorage[0])] = '\n';
+
     /*Index set*/
     char* filePointer = fileStorage[0];
     int ifFailed = 0;
@@ -66,6 +68,7 @@ void run(char** playableFile) {
                 break;
             }
             case '}':{
+                /*Drop ifFailed number*/
                 if(ifFailed != 0){
                 --ifFailed;
                 }
@@ -362,14 +365,39 @@ void run(char** playableFile) {
                         fileStorage = (char**)realloc(aliasValArr,(sizeof(fileStorage[0])*maxFiles));
                         }
                         filePointer = strchr(filePointer, '(');
-                        filePointer = strchr(filePointer, '"');
+                        filePointer += strcspn(filePointer, "<\"");
                         ++filePointer;
                         tmpToken = filePointer;
-                        filePointer = strchr(filePointer, '"');
+                        filePointer += strcspn(filePointer, ">\"");
                         charStorage = filePointer[0];
                         filePointer[0] = 0;
 
-                        fileRead(tmpToken, &fileStorage[curFile], 1);
+                        char*PlayFile = (void*)0;
+                        switch(charStorage){
+                            case '"':{
+                        PlayFile = (char*)calloc(((strlen(fileLocation))+strlen(tmpToken)+1), sizeof(PlayFile[0]));
+                        memcpy(PlayFile, fileLocation, strlen(fileLocation));
+                        memcpy(&PlayFile[(strlen(fileLocation))], tmpToken, (strlen(tmpToken)));
+                        break;
+                        }
+                            case '>':{
+                                PlayFile = tmpToken;
+                                break;
+                            }
+                            default:{
+                                break;
+                            }
+                        }
+                        fileRead(PlayFile, &fileStorage[curFile], 1);
+                        switch(charStorage){
+                            case '"':{
+                        free(PlayFile);
+                        break;
+                        }
+                            default:{
+                                break;
+                            }
+                        }
                         filePointer[0] = charStorage;
                         /*Make sure file ends with a newline to avoid crashing*/
                         fileStorage[curFile][strlen(fileStorage[curFile])] = '\n';
