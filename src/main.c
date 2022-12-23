@@ -48,6 +48,7 @@ free(TmpWorkFilePath);
 
 #else 
 /*Linux entry point*/
+#include <stdio.h>
 int main(int arcv, char** argv){
 #endif
 #include "headers/flags.h"
