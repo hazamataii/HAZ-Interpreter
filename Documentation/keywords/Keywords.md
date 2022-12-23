@@ -10,4 +10,4 @@ This is the list of keywords that work with the interpreter.
 [setAlias](setAlias.md)\
 [playFile](playFile.md)\
 [getInput](getInput.md)\
-[if](if.md)\
+[if](if.md)
