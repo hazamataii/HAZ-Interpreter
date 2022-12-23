@@ -85,6 +85,7 @@ if(Flags & COMPILEMODE) {
     /*Compile Mode*/
     if(Flags & DEBUGMODE) {
         /*Debug Mode*/
+        printf("NONE EXISTENT\n");
     } else {
         /*No Debug Mode*/
         #include "headers/compile/compile.h"
@@ -94,6 +95,7 @@ if(Flags & COMPILEMODE) {
     /*Run Mode*/
     if(Flags & DEBUGMODE) {
         /*Debug Mode*/
+        printf("NONE EXISTENT\n");
     } else {
         /*No Debug Mode*/
         #include <string.h>

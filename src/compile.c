@@ -7,8 +7,28 @@
 #include <stdlib.h>
 
 void compile(char** playableFile) {
-    /*Read File into memory*/
+
+    unsigned int maxInts = 10;
+    int *integerArr = (void*)0;
+    integerArr = (int*)calloc(maxInts, sizeof(integerArr[0]));
+    unsigned int* integerVarNames =(void*)0;
     
+    unsigned int currentInts = 0;
+    //integerArr = (int*)calloc(maxInts, sizeof(integerArr[0]));
+    integerVarNames = (unsigned int*)calloc(maxInts, sizeof(integerVarNames[0]));
+
+
+
+    unsigned int *aliasValArr = (void*)0;
+    int *aliasTypeArr = (void*)0;
+    unsigned int* aliasArrHash =(void*)0;
+    unsigned int maxAlias = 10;
+    aliasValArr = (unsigned int*)calloc(maxAlias, sizeof(aliasValArr[0]));
+    aliasTypeArr = (int*)calloc(maxAlias, sizeof(aliasTypeArr[0]));
+    aliasArrHash = (unsigned int*)calloc(maxAlias, sizeof(aliasArrHash[0]));
+    unsigned int currAlias = 0;
+
+    /*Read File into memory*/
     char* playableFileContents = (void*)0;
     if(fileRead(playableFile[0], &playableFileContents, 1) != 0) {
         /*Return if failed*/
@@ -162,6 +182,71 @@ void compile(char** playableFile) {
                     }
                     case 684:{
                         /*string*/
+                    }
+                    case 858:{
+                        /*setAlias*/
+                        filePointer[0] = charStorage;
+                        /*Resize*/
+                        if(currAlias == (maxAlias-1)){
+                        unsigned int const Old = maxAlias;
+                        maxAlias+= 10;
+                        aliasTypeArr = (int*)realloc(aliasTypeArr,(sizeof(aliasTypeArr[0])*maxAlias));
+                        aliasValArr = (unsigned int*)realloc(aliasValArr,(sizeof(aliasTypeArr[0])*maxAlias));
+                        aliasArrHash = (unsigned int*)realloc(aliasArrHash, (sizeof(aliasArrHash[0])*maxAlias));
+                        memset(&aliasArrHash[Old], 0, (maxAlias-1));
+                        }
+                        ++currAlias;
+                        filePointer = strchr(filePointer, '(');
+                        ++filePointer;
+                        while(filePointer[0] == ' ') {
+                            ++filePointer;
+                        }
+                        tmpToken = filePointer;
+                        filePointer += strcspn(filePointer, " ,");
+                        charStorage = filePointer[0];
+                        filePointer[0] = 0;
+                        char Type = 0;
+                        switch(hashCheckStringValueNoTable(tmpToken)) {
+                            case 650:{
+                                /*FUNCTION*/
+                                Type = 1;
+                                break;
+                            }
+                            default:{
+                                break;
+                            }
+                        }
+
+                        filePointer[0] = charStorage;
+                        filePointer = strchr(filePointer, ',');
+                        ++filePointer;
+                        while(filePointer[0] == ' ') {
+                            ++filePointer;
+                        }
+                        tmpToken = filePointer;
+                        filePointer += strcspn(filePointer, " ,");
+                        charStorage = filePointer[0];
+                        filePointer[0] = 0;
+                        unsigned int const tokenHash = hashCheckStringValueNoTable(tmpToken);
+
+                        filePointer[0] = charStorage;
+                        filePointer = strchr(filePointer, ',');
+                        ++filePointer;
+                        while(filePointer[0] == ' ') {
+                            ++filePointer;
+                        }
+                        tmpToken = filePointer;
+                        filePointer += strcspn(filePointer, " )");
+                        charStorage = filePointer[0];
+                        filePointer[0] = 0;
+                        hashSetString(tmpToken, &aliasArrHash, maxAlias);
+                        unsigned int const Pos = hashCheckStringPos(tmpToken, aliasArrHash, maxAlias);
+                        aliasTypeArr[Pos] = Type;
+                        aliasValArr[Pos] = tokenHash;
+                        filePointer[0] = charStorage;
+                        filePointer = strchr(filePointer, ')');
+                        filePointer = strchr(filePointer, '\n');
+
                     }
                     default:{
                         filePointer = strchr(filePointer, '\n');

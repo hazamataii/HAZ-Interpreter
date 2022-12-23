@@ -7,52 +7,60 @@
 #include <string.h>
 void run(char** playableFile) {
     /*Read File into memory*/
+    /*hashSetStringNoTable("int");
+    hashSetStringNoTable("integer");
+    hashSetStringNoTable("print");
+    hashSetStringNoTable("printn");
+    hashSetStringNoTable("setAlias");
     hashSetStringNoTable("FUNCTION");
-    //hashSetStringNoTable("string");
-    int *integerArr = (void*)0;
-    unsigned int* integerVarNames =(void*)0;
+    hashSetStringNoTable("playFile");*/
+
+    /*File Pointers*/
+    unsigned int maxFiles = 10;
+    unsigned int curFile = 0;
+    char** posPointer = (void*)0;
+    char** fileStorage = (void*)0;
+    posPointer = (char**)calloc(maxFiles, sizeof(posPointer[0]));
+    fileStorage = (char**)calloc(maxFiles, sizeof(fileStorage[0]));
+
+    /*Integer Setup*/
     unsigned int maxInts = 10;
+    int *integerArr = (void*)0;
     integerArr = (int*)calloc(maxInts, sizeof(integerArr[0]));
+    unsigned int* integerVarNames =(void*)0;
+    unsigned int currentInts = 0;
     integerVarNames = (unsigned int*)calloc(maxInts, sizeof(integerVarNames[0]));
 
-
-
-    int *aliasValArr = (void*)0;
+    /*Alias setup*/
+    unsigned int *aliasValArr = (void*)0;
     int *aliasTypeArr = (void*)0;
     unsigned int* aliasArrHash =(void*)0;
     unsigned int maxAlias = 10;
-    aliasValArr = (int*)calloc(maxAlias, sizeof(aliasValArr[0]));
+    aliasValArr = (unsigned int*)calloc(maxAlias, sizeof(aliasValArr[0]));
     aliasTypeArr = (int*)calloc(maxAlias, sizeof(aliasTypeArr[0]));
     aliasArrHash = (unsigned int*)calloc(maxAlias, sizeof(aliasArrHash[0]));
+    unsigned int currAlias = 0;
 
 
-
-    char* playableFileContents = (void*)0;
-    if(fileRead(playableFile[0], &playableFileContents, 1) != 0) {
+    /*char* playableFileContents = (void*)0;*/
+    if(fileRead(playableFile[0], &fileStorage[0], 1) != 0) {
         /*Return if failed*/
         return;
     }
     /*Make sure file ends with a newline to avoid crashing*/
-    playableFileContents[strlen(playableFileContents)] = '\n';
+    fileStorage[0][strlen(fileStorage[0])] = '\n';
     /*Index set*/
-    char* filePointer = playableFileContents;
+    char* filePointer = fileStorage[0];
     /*Check if first character is a comment*/
-    if(filePointer[0] == ';') {
+    //if(filePointer[0] == ';') {
         /*Go to newline*/
-        filePointer = strchr(filePointer, '\n');
-    }
+    //    filePointer = strchr(filePointer, '\n');
+    //}
+    TOPOFRUN:
     while(filePointer[0]) {
         /*Skip over whitespace*/
-        switch(filePointer[0]){
-            case ' ':
-            case '\t':
-            case '\n':
-        filePointer += strcspn(filePointer, "; \t\n\0");
-        ++filePointer;
-        break;
-        default:{
-            break;
-        }
+        while(filePointer[0] == ' ' || filePointer[0] == '\n'  || filePointer[0] == '\t') {
+            ++filePointer;
         }
         switch(filePointer[0]) {
             case 0:{
@@ -77,7 +85,7 @@ void run(char** playableFile) {
                 unsigned int tokenHashVal = hashCheckStringValueNoTable(tmpToken);
                 HASHLABELTOP:
                 switch(tokenHashVal) {
-                    case 572:{
+                    case 1405481478:{
                         /*print*/
                         filePointer[0] = charStorage;
                         filePointer = strchr(filePointer, '(');
@@ -109,7 +117,7 @@ void run(char** playableFile) {
                         filePointer = strchr(filePointer, '\n');
                         break;
                     }
-                    case 688:{
+                    case 1041173394:{
                         /*printn*/
                         filePointer[0] = charStorage;
                         filePointer = strchr(filePointer, '(');
@@ -141,9 +149,18 @@ void run(char** playableFile) {
                         filePointer = strchr(filePointer, '\n');
                         break;
                     }
-                    case 858:{
+                    case 1035894603:{
                         /*setAlias*/
                         filePointer[0] = charStorage;
+                        /*Resize*/
+                        if(currAlias == maxAlias){
+                        unsigned int const Old = maxAlias;
+                        maxAlias+= 10;
+                        aliasTypeArr = (int*)realloc(aliasTypeArr,(sizeof(aliasTypeArr[0])*maxAlias));
+                        aliasValArr = (unsigned int*)realloc(aliasValArr,(sizeof(aliasTypeArr[0])*maxAlias));
+                        aliasArrHash = (unsigned int*)realloc(aliasArrHash, (sizeof(aliasArrHash[0])*maxAlias));
+                        memset(&aliasArrHash[Old], 0, (maxAlias-1));
+                        }
                         filePointer = strchr(filePointer, '(');
                         ++filePointer;
                         while(filePointer[0] == ' ') {
@@ -155,7 +172,7 @@ void run(char** playableFile) {
                         filePointer[0] = 0;
                         char Type = 0;
                         switch(hashCheckStringValueNoTable(tmpToken)) {
-                            case 650:{
+                            case 1347283628:{
                                 /*FUNCTION*/
                                 Type = 1;
                                 break;
@@ -194,18 +211,28 @@ void run(char** playableFile) {
                         filePointer[0] = charStorage;
                         filePointer = strchr(filePointer, ')');
                         filePointer = strchr(filePointer, '\n');
-
+                        ++currAlias;
+                        break;
                     }
                     case 684:{
                         /*string*/
                         break;
                     }
                     
-                    case 337:
+                    case 556453026:
                     /*int*/
-                    case 778:{
+                    case 3305686986:{
                         /*integer*/
                         filePointer[0] = charStorage;
+                        /*reallocate if max size*/
+                        if(currentInts == (maxInts)){
+                        unsigned int const Old = maxInts;
+                        maxInts+= 10;
+                        if((integerArr = (int*)realloc(integerArr,(sizeof(integerArr[0])*maxInts))) == (void*)0) {
+                        }
+                        integerVarNames = (unsigned int*)realloc(integerVarNames, (sizeof(integerVarNames[0])*maxInts));
+                        memset(&integerVarNames[Old], 0, (maxInts-1));
+                        }
                         filePointer = strchr(filePointer, ' ');
                         ++filePointer;
                         tmpToken = filePointer;
@@ -222,6 +249,37 @@ void run(char** playableFile) {
                         }
                         integerArr[pos] = atoi(filePointer);
                         filePointer = strchr(filePointer, '\n');
+                        ++currentInts;
+                        break;
+                    }
+                    case 4007848917:{
+                        /*playFile*/
+                        filePointer[0] = charStorage;
+                        ++curFile;
+                        if(curFile == maxFiles){
+                        unsigned int const Old = maxFiles;
+                        maxFiles+= 10;
+                        posPointer = (char**)realloc(aliasTypeArr,(sizeof(posPointer[0])*maxFiles));
+                        fileStorage = (char**)realloc(aliasValArr,(sizeof(fileStorage[0])*maxFiles));
+                        }
+                        filePointer = strchr(filePointer, '(');
+                        filePointer = strchr(filePointer, '"');
+                        ++filePointer;
+                        tmpToken = filePointer;
+                        filePointer = strchr(filePointer, '"');
+                        charStorage = filePointer[0];
+                        filePointer[0] = 0;
+
+                        fileRead(tmpToken, &fileStorage[curFile], 1);
+                        filePointer[0] = charStorage;
+                        /*Make sure file ends with a newline to avoid crashing*/
+                        fileStorage[curFile][strlen(fileStorage[curFile])] = '\n';
+                        filePointer = strchr(filePointer, ')');
+                        filePointer = strchr(filePointer, '\n');
+                       // printf("File:\n%u\n", curFile);
+                        posPointer[(curFile-1)] = filePointer;
+                        filePointer = fileStorage[curFile];
+                        
                         break;
                     }
                     default:{
@@ -242,6 +300,13 @@ void run(char** playableFile) {
         } 
     }
 
-    free(playableFileContents);
+    //--curFile;
+    free(fileStorage[curFile]);
+    //printf("%u\n", curFile);
+    --curFile;
+    if(curFile != 0xffffffff) {
+        filePointer = posPointer[curFile];
+        goto TOPOFRUN;
+    }
     return;
 }

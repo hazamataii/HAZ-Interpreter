@@ -2,33 +2,42 @@
 #include <string.h>
 
 #include <stdio.h>
-void hashSetStringNoTable(const char* __restrict__ str) {
+void hashSetStringNoTable(char* __restrict__ str) {
 
     register unsigned int const Length = strlen(str);
     register unsigned int hash_Value = 0;
-    register unsigned int i = 0;
-    while(i < Length) {
-        hash_Value += str[i];
-        hash_Value -= (i-Length);
-        ++i;
+    char *s = str;
+    for(; *s; ++s)
+    {
+        hash_Value += *s;
+        hash_Value += (hash_Value << 10);
+        hash_Value ^= (hash_Value >> 6);
     }
+
+    hash_Value += (hash_Value << 3);
+    hash_Value ^= (hash_Value >> 11);
+    hash_Value += (hash_Value << 15);
     printf("Str:%s Value:%u\n", str, hash_Value);
     return;
 
 }
 
-void hashSetString(const char* __restrict__ str, unsigned int** __restrict__ hashTable, const unsigned int maxPos) {
+void hashSetString(char* __restrict__ str, unsigned int** __restrict__ hashTable, const unsigned int maxPos) {
 
     /*Get string length*/
     register unsigned int const Length = strlen(str);
     register unsigned int hash_Value = 0;
-    register unsigned int i = 0;
-    /*Add character value then subtract location in string by length*/
-    while(i < Length) {
-        hash_Value += str[i];
-        hash_Value -= (i-Length);
-        ++i;
+    char *s = str;
+    for(; *s; ++s)
+    {
+        hash_Value += *s;
+        hash_Value += (hash_Value << 10);
+        hash_Value ^= (hash_Value >> 6);
     }
+
+    hash_Value += (hash_Value << 3);
+    hash_Value ^= (hash_Value >> 11);
+    hash_Value += (hash_Value << 15);
     /*Make sure Position exists in hashTable*/
     register unsigned int Pos = hash_Value % maxPos;
     /*Check default spot*/
@@ -49,18 +58,22 @@ void hashSetString(const char* __restrict__ str, unsigned int** __restrict__ has
     return;
 }
 
-unsigned int hashCheckStringPos(const char* __restrict__ str, const unsigned int* __restrict__ hashTable, const unsigned int maxPos) {
+unsigned int hashCheckStringPos(char* __restrict__ str, const unsigned int* __restrict__ hashTable, const unsigned int maxPos) {
 
     /*Get string length*/
     register unsigned int const Length = strlen(str);
     register unsigned int hash_Value = 0;
-    register unsigned int i = 0;
-    /*Add character value then subtract location in string by length*/
-    while(i < Length) {
-        hash_Value += str[i];
-        hash_Value -= (i-Length);
-        ++i;
+    char *s = str;
+    for(; *s; ++s)
+    {
+        hash_Value += *s;
+        hash_Value += (hash_Value << 10);
+        hash_Value ^= (hash_Value >> 6);
     }
+
+    hash_Value += (hash_Value << 3);
+    hash_Value ^= (hash_Value >> 11);
+    hash_Value += (hash_Value << 15);
 
     /*Make sure Position exists in hashTable*/
     register unsigned int Pos = hash_Value % maxPos;
@@ -85,51 +98,44 @@ unsigned int hashCheckStringPos(const char* __restrict__ str, const unsigned int
     return maxPos;
 }
 
-unsigned int hashCheckStringValue(const char* __restrict__ str, const unsigned int* __restrict__ hashTable, const unsigned int maxPos) {
+unsigned int hashCheckStringValue(char* __restrict__ str, const unsigned int* __restrict__ hashTable, const unsigned int maxPos) {
     
     /*Get string length*/
     register unsigned int const Length = strlen(str);
     register unsigned int hash_Value = 0;
-    register unsigned int i = 0;
-    /*Add character value then subtract location in string by length*/
-    while(i < Length) {
-        hash_Value += str[i];
-        hash_Value -= (i-Length);
-        ++i;
+    char *s = str;
+    for(; *s; ++s)
+    {
+        hash_Value += *s;
+        hash_Value += (hash_Value << 10);
+        hash_Value ^= (hash_Value >> 6);
     }
+
+    hash_Value += (hash_Value << 3);
+    hash_Value ^= (hash_Value >> 11);
+    hash_Value += (hash_Value << 15);
     /*Make sure Position exists in hashTable*/
     register unsigned int Pos = hash_Value % maxPos;
     /*Check default spot*/
     //if(hashTable[Pos] == hash_Value){
     return hash_Value;
-    /*Try spot 0*/
-    //} else if(hashTable[0] == hash_Value){
-    //return hash_Value;
-    /*Go through hashTable until the end or it is found*/
-    //} else {
-    //    Pos = 1;
-    //    while(hashTable[Pos] != hash_Value && Pos < maxPos) {
-    //        ++Pos;
-    //    }
-    //    if(Pos < maxPos) {
-    //        return hash_Value;
-    //    }
-    //}
-    /*If not found, return maxPos (Invalid spot on hashTable)*/
-    //return 0;
 }
 
-unsigned int hashCheckStringValueNoTable(const char* __restrict__ str) {
+unsigned int hashCheckStringValueNoTable(char* __restrict__ str) {
     /*Get string length*/
     register unsigned int const Length = strlen(str);
     register unsigned int hash_Value = 0;
-    register unsigned int i = 0;
-    /*Add character value then subtract location in string by length*/
-    while(i < Length) {
-        hash_Value += str[i];
-        hash_Value -= (i-Length);
-        ++i;
+    char *s = str;
+    for(; *s; ++s)
+    {
+        hash_Value += *s;
+        hash_Value += (hash_Value << 10);
+        hash_Value ^= (hash_Value >> 6);
     }
+
+    hash_Value += (hash_Value << 3);
+    hash_Value ^= (hash_Value >> 11);
+    hash_Value += (hash_Value << 15);
 
     return hash_Value;
 }
