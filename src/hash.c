@@ -82,11 +82,8 @@ unsigned int hashCheckStringPos(char* __restrict__ str, const unsigned int* __re
     if(hashTable[Pos] == hash_Value){
     return Pos;
     /*Try spot 0*/
-    } else if(hashTable[0] == 0){
-    return 0;
-    /*Go through hashTable until the end or it is found*/
     } else {
-        Pos = 1;
+        Pos = 0;
         while(hashTable[Pos] != hash_Value && Pos < maxPos) {
             ++Pos;
         }

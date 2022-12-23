@@ -15,5 +15,10 @@ To print a variable's contents, just put the variable's name inside the parentes
 # Example:
 
 ```
+;Prints the text inside the quotation marks
 print("Hello World!")
+
+;Prints the integer
+int example = 10
+print(example)
 ```

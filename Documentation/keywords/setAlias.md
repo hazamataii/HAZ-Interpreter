@@ -14,5 +14,10 @@ This is useful for making it more readable for certain languages or making the f
 # Example:
 
 ```
-setAlias(FUNCTION, setAlias, alias)
+;Sets the alias of the function "printn" to "prt"
+setAlias(FUNCTION, printn, prt)
+
+;Use the alias to use printn
+prt("setAlias Example!")
+printn("Example!")
 ```
