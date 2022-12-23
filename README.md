@@ -1,8 +1,8 @@
 # HAZ INTERPRETER
 
-# USAGE:
+# Usage:
 
-[INTERPRETER FLAGS](Documentation/Interpreter_flags.md)
+[INTERPRETER FLAGS](Documentation/Interpreter_flags.md)\
 [KEYWORDS](Documentation/keywords/Keywords.md)
 
 # Releases:
