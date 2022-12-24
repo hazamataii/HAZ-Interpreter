@@ -17,6 +17,7 @@ void run(char** playableFile, const char* __restrict__ fileLocation) {
     hashSetStringNoTable("playFile");
     hashSetStringNoTable("getInput");
     hashSetStringNoTable("if");*/
+    hashSetStringNoTable("string");
 
     /*File Pointers*/
     unsigned int maxFiles = 10;
@@ -247,8 +248,11 @@ void run(char** playableFile, const char* __restrict__ fileLocation) {
                         filePointer = strchr(filePointer, '\n');
                         break;
                     }
-                    case 684:{
+                    case 986435205:{
                         /*string*/
+                        filePointer[0] = charStorage;
+
+                        filePointer = strchr(filePointer, '\n');
                         break;
                     }
                     case 3200026375:{
@@ -412,26 +416,86 @@ void run(char** playableFile, const char* __restrict__ fileLocation) {
                         break;
                     }
                     default:{
+
                         if(ifFailed == 0){
+
+                        /*Check if its an integer*/
                         unsigned int Pos = hashCheckStringPos(tmpToken, integerVarNames, maxInts);
-                        //printf("POS:%u, max:%u", Pos, maxInts);
                         if(Pos < maxInts) {
+                        /*Its an integer*/
                         filePointer[0] = charStorage;
-                        filePointer = strchr(filePointer, '=');
+                        filePointer += strcspn(filePointer, "+-*/=");
+                        char operation = filePointer[0];
                         ++filePointer;
+                        char operation2 = 0;
+                        switch(operation){
+                            case '+':
+                            case '-':
+                            case '*':
+                            case '/':{
+                                operation2 = filePointer[0];
+                                ++filePointer;
+                            }
+                            default:{
+                                break;
+                            }
+                        }
                         while(filePointer[0] == ' ') {
                             ++filePointer;
                         }
-                        if(filePointer[0] >= '0' && filePointer[0] <= '9') {
-                            integerArr[Pos] = atoi(filePointer);
+
+                        /*Determine Input Type*/
+                        int InputInt = 0;
+                        if((filePointer[0] >= '0' && filePointer[0] <= '9') || filePointer[0] == '-') {
+                            InputInt = atoi(filePointer);
                         } else {
                             tmpToken = filePointer;
                             filePointer += strcspn(filePointer, " \n");
                             charStorage = filePointer[0];
                             filePointer[0] = 0;
-                            integerArr[Pos] = integerArr[hashCheckStringPos(tmpToken, integerVarNames, maxInts)];
+                            InputInt = integerArr[hashCheckStringPos(tmpToken, integerVarNames, maxInts)];
                             filePointer[0] = charStorage;
                         }
+
+                        switch(operation){
+                            case '+':
+                            case '-':
+                            case '/':
+                            case '*':{
+                                if(operation2 = '='){
+                                switch(operation){
+                                    case '+':{
+                                        integerArr[Pos] += InputInt;
+                                        break;
+                                    }
+                                    case '-':{
+                                        integerArr[Pos] -= InputInt;
+                                        break;
+                                    }
+                                    case '*':{
+                                        integerArr[Pos] *= InputInt;
+                                        break;
+                                    }
+                                    case '/':{
+                                        integerArr[Pos] /= InputInt;
+                                        break;
+                                    }
+                                    default:{
+                                        break;
+                                    }
+                                }
+                                }
+                                break;
+                            }
+                            case '=':{
+                                integerArr[Pos] = InputInt;
+                                break;
+                            }
+                            default:{
+                                break;
+                            }
+                        }
+
                         filePointer = strchr(filePointer, '\n');
                         } else {
                         Pos = hashCheckStringPos(tmpToken, aliasArrHash, maxAlias);

@@ -63,7 +63,6 @@ char* playableFile = argv[1];
 
 /*Check Arguments*/
 while(i < arcv) {
-    printf("%s\n", argv[i]);
     if(argv[i][0] == '-') {
         switch(argv[i][1]) {
             case 'C':
@@ -97,7 +96,6 @@ if(playableFileDirPtr != 0){
 ++playableFileDirPtr;
 }
 playableFileDir[playableFileDirPtr] = 0;
-printf("%s\n", playableFileDir);
 
 if(Flags & COMPILEMODE) {
     /*Compile Mode*/
